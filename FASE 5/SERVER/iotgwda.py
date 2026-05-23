@@ -97,6 +97,7 @@ def gestisci_client(conn, addr):
                 try:
                     mqtt_client.username_pw_set(token)
                     mqtt_client.connect(BROKER, PORTA_BROKER)
+                    mqtt_client.loop_start()
 
                     print(f"[Thread {addr}] MQTT connesso per dispositivo {identita_client}")
 
@@ -151,6 +152,7 @@ def gestisci_client(conn, addr):
     conn.close()
 
     if mqtt_client:
+        mqtt_client.loop_stop()
         mqtt_client.disconnect()
 
     print(f"[Thread {addr}] Thread terminato per {identita_client}.")
@@ -184,6 +186,7 @@ except Exception as e:
     sys.exit()
 
 s.listen(10)
+s.settimeout(1.0) # timeout per consentire di interrompere lo script 
 
 print(f"Gateway IoT in attesa di connessioni su porta {PORTA_SERVER}...")
 
