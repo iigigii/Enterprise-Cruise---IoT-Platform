@@ -215,6 +215,9 @@ while True:
         s.close()
         break
 
+    except TimeoutError:
+        continue
+
     except Exception as e:
 
         print("Errore accettazione connessione:", e)
