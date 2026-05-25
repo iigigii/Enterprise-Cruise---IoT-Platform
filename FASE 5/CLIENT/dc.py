@@ -10,7 +10,7 @@ IDENTITA = input("Inserisci identità (es. DC-001): ").strip()
 
 # caricamento parametri cabina
 try:
-    with open("Configurazione/da.json", "r") as f:
+    with open("da.json", "r") as f:
         da = json.load(f)
 except Exception as e:
     print("ERRORE lettura da.json:", e)
@@ -30,7 +30,7 @@ PONTE  = parametri["ponte"]
 print(f"Dispositivo: {IDENTITA} | Cabina {CABINA} | Ponte {PONTE}")
 
 # inizializzazione sensore
-sensor = dht.DHT11(machine.Pin(28))
+sensor = dht.DHT11(machine.Pin(0))
 
 # connesione al gateway
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
