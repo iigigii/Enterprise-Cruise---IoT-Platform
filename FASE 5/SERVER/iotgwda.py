@@ -68,7 +68,7 @@ def gestisci_client(conn, addr):
 
             buffer += data.decode("utf-8")
 
-            #  Processa tutti i messaggi completi nel buffer
+            # Processa tutti i messaggi completi nel buffer
             while "\n" in buffer:
                 linea, buffer = buffer.split("\n", 1)
                 linea = linea.strip()
@@ -77,73 +77,73 @@ def gestisci_client(conn, addr):
 
                 dato = json.loads(linea)
 
-            print("Gateway IoT in ricezione e invio")
+                print("Gateway IoT in ricezione e invio")
 
-            # Inizializzazione MQTT al primo dato ricevuto
-            if identita_client is None:
+                # Inizializzazione MQTT al primo dato ricevuto
+                if identita_client is None:
 
-                identita_client = dato.get("identita")
-                cabina_client = dato.get("cabina")
-                ponte_client = dato.get("ponte")
+                    identita_client = dato.get("identita")
+                    cabina_client = dato.get("cabina")
+                    ponte_client = dato.get("ponte")
 
-                if identita_client not in tokens:
-                    print(f"[Thread {addr}] ERRORE: nessun token trovato per {identita_client}")
-                    break
+                    if identita_client not in tokens:
+                        print(f"[Thread {addr}] ERRORE: nessun token trovato per {identita_client}")
+                        break
 
-                token = tokens[identita_client]
+                    token = tokens[identita_client]
 
-                mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+                    mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-                try:
-                    mqtt_client.username_pw_set(token)
-                    mqtt_client.connect(BROKER, PORTA_BROKER)
-                    mqtt_client.loop_start()
+                    try:
+                        mqtt_client.username_pw_set(token)
+                        mqtt_client.connect(BROKER, PORTA_BROKER)
+                        mqtt_client.loop_start()
 
-                    print(f"[Thread {addr}] MQTT connesso per dispositivo {identita_client}")
+                        print(f"[Thread {addr}] MQTT connesso per dispositivo {identita_client}")
 
-                except Exception as e:
-                    print(f"[Thread {addr}] Errore connessione MQTT:", e)
-                    break
+                    except Exception as e:
+                        print(f"[Thread {addr}] Errore connessione MQTT:", e)
+                        break
 
-            # Accumulo dati
-            temperature.append(dato["temperature"])
-            umidita.append(dato["humidity"])
+                # Accumulo dati
+                temperature.append(dato["temperature"])
+                umidita.append(dato["humidity"])
 
-            # Invio media ogni TEMPO_RILEVAZIONE secondi
-            if time.time() - start_time >= TEMPO_RILEVAZIONE:
+                # Invio media ogni TEMPO_RILEVAZIONE secondi
+                if time.time() - start_time >= TEMPO_RILEVAZIONE:
 
-                media_t = round(
-                    sum(temperature) / len(temperature),
-                    NUMERO_DECIMALI
-                )
+                    media_t = round(
+                        sum(temperature) / len(temperature),
+                        NUMERO_DECIMALI
+                    )
 
-                media_u = round(
-                    sum(umidita) / len(umidita),
-                    NUMERO_DECIMALI
-                )
+                    media_u = round(
+                        sum(umidita) / len(umidita),
+                        NUMERO_DECIMALI
+                    )
 
-                invio_numero += 1
+                    invio_numero += 1
 
-                dato_iot = {
-                    "cabina": cabina_client,
-                    "ponte": ponte_client,
-                    "temperature": media_t,
-                    "humidity": media_u,
-                    "dataeora": int(time.time()),
-                    "invionumero": invio_numero,
-                    "identita": identita_client
-                }
+                    dato_iot = {
+                        "cabina": cabina_client,
+                        "ponte": ponte_client,
+                        "temperature": media_t,
+                        "humidity": media_u,
+                        "dataeora": int(time.time()),
+                        "invionumero": invio_numero,
+                        "identita": identita_client
+                    }
 
-                dato_json = json.dumps(dato_iot)
+                    dato_json = json.dumps(dato_iot)
 
-                mqtt_client.publish(TOPIC, dato_json)
+                    mqtt_client.publish(TOPIC, dato_json)
 
-                print(f"Inviato a ThingsBoard ({identita_client}):", dato_iot)
+                    print(f"Inviato a ThingsBoard ({identita_client}):", dato_iot)
 
-                temperature = []
-                umidita = []
+                    temperature = []
+                    umidita = []
 
-                start_time = time.time()
+                    start_time = time.time()
 
         except Exception as e:
             print(f"[Thread {addr}] Errore:", e)
@@ -186,7 +186,7 @@ except Exception as e:
     sys.exit()
 
 s.listen(10)
-s.settimeout(1.0) # timeout per consentire di interrompere lo script 
+s.settimeout(1.0)  # timeout per consentire di interrompere lo script
 
 print(f"Gateway IoT in attesa di connessioni su porta {PORTA_SERVER}...")
 
