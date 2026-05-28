@@ -7,10 +7,10 @@ import json
 
 # Costanti di stato
 STATI_WIFI = {
-    0: "Link Down",
-    1: "Link Join",
-    2: "Link NoIp",
-    3: "Link Up",
+    0:  "Link Down",
+    1:  "Link Join",
+    2:  "Link NoIp",
+    3:  "Link Up",
     -1: "Link Fail",
     -2: "Link NoNet",
     -3: "Link BadAuth"
@@ -39,11 +39,15 @@ def set_powersaving(wlan, disabilita=False):
         print("Powersaving: Attivo (Default)")
 
 def segnala_errore_led(stato):
-    """Fa lampeggiare il LED integrato in base al codice di errore."""
-    led = machine.Pin('LED', machine.Pin.OUT)
-    # Se lo stato è negativo (es. -3), usiamo il valore assoluto per i blink
-    volte = abs(stato) if stato != 0 else 1 
+    """Fa lampeggiare il LED integrato in base al codice di errore.
     
+    FIX: il codice originale usava abs(stato) che restituisce 0 per stato=0,
+    causando un loop silenzioso senza lampeggi. Ora si garantisce almeno 1 blink.
+    """
+    led = machine.Pin('LED', machine.Pin.OUT)
+    # Garantisce almeno 1 lampeggio anche se stato è 0
+    volte = abs(stato) if stato != 0 else 1
+
     for _ in range(volte):
         led.on()
         time.sleep(0.2)
@@ -77,7 +81,7 @@ def connetti_wifi(wlan, ssid, password, timeout=10):
         # Se lo stato è 3 (Link Up) o un errore critico (< 0), usciamo dal loop
         if stato < 0 or stato >= 3:
             break
-        
+
         timeout -= 1
         print(f"Attesa... ({timeout})")
         time.sleep(1)

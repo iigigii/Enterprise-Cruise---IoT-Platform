@@ -4,16 +4,18 @@ import time
 import dht
 import machine
 from misurazione import lettura_sensore
+from cripto import criptazione   # FIX: importato ma non usato nel file originale
 
-# scelta identità
+# Scelta identità
 IDENTITA = input("Inserisci identità (es. DC-001): ").strip()
 
-# caricamento parametri cabina
+# Caricamento parametri cabina
+# FIX: il path originale era "da.json" ma il file si trova in "Configurazione/da.json"
 try:
-    with open("da.json", "r") as f:
+    with open("Configurazione/da.json", "r") as f:
         da = json.load(f)
 except Exception as e:
-    print("ERRORE lettura da.json:", e)
+    print("ERRORE lettura Configurazione/da.json:", e)
     raise SystemExit
 
 if IDENTITA not in da:
@@ -29,10 +31,10 @@ PONTE  = parametri["ponte"]
 
 print(f"Dispositivo: {IDENTITA} | Cabina {CABINA} | Ponte {PONTE}")
 
-# inizializzazione sensore
+# Inizializzazione sensore
 sensor = dht.DHT11(machine.Pin(0))
 
-# connesione al gateway
+# Connessione al gateway
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
@@ -43,7 +45,7 @@ except Exception as e:
 
 print(f"Connesso al Gateway IoT ({IP}:{PORTA})")
 
-# invio dati
+# Invio dati
 while True:
 
     try:
@@ -60,8 +62,12 @@ while True:
         }
 
         dato_json = json.dumps(dato)
+
+        # FIX: cifra il dato prima dell'invio usando cripto.py
+        dato_cifrato = criptazione(dato_json)
+
         print(f"[{IDENTITA}] Dato inviato:", dato)
-        s.sendall((dato_json + "\n").encode("utf-8"))
+        s.sendall((dato_cifrato + "\n").encode("utf-8"))
 
         time.sleep(2)
 

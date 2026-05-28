@@ -10,7 +10,7 @@ def lettura_sensore(sensor):
     try:
         sensor.measure()
         temp = sensor.temperature()
-        hum = sensor.humidity()
+        hum  = sensor.humidity()
     except OSError as e:
         raise e
 
