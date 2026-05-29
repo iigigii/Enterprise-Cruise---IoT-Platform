@@ -30,7 +30,7 @@ PONTE  = parametri["ponte"]
 print(f"Dispositivo: {IDENTITA} | Cabina {CABINA} | Ponte {PONTE}")
 
 # inizializzazione sensore
-sensor = dht.DHT11(machine.Pin(0))
+sensor = dht.DHT11(machine.Pin(2))
 
 # connesione al gateway
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
